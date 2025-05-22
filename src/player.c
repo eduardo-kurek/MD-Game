@@ -6,8 +6,14 @@
 #include "utils.h"
 
 GameObject player;
+u8 jumpsRemainings = 2;
 
-void PLAYER_get_input();
+void PLAYER_input_move();
+inline void PLAYER_adjust_gravity_on_ground();
+inline bool PLAYER_can_jump();
+void PLAYER_input_jump();
+inline void PLAYER_restore_jumps_on_ground();
+inline bool PLAYER_on_ceil();
 void PLAYER_stop_input();
 void PLAYER_apply_gravity();
 void PLAYER_render();
@@ -25,8 +31,11 @@ u16 PLAYER_init(u16 ind) {
 // UPDATE
 
 void PLAYER_update() {
-	PLAYER_get_input();
+	PLAYER_input_move();
+	PLAYER_adjust_gravity_on_ground();
+	PLAYER_input_jump();
 	PLAYER_apply_gravity();
+	PLAYER_restore_jumps_on_ground();
 	GAMEOBJECT_calculate_next_position(&player);
 	LEVEL_move_and_slide(&player);
 	GAMEOBJECT_apply_next_position(&player);
@@ -34,12 +43,39 @@ void PLAYER_update() {
 	PLAYER_render();
 }
 
-void PLAYER_get_input(){
+void PLAYER_input_move(){
 	if(key_down(JOY_1, BUTTON_RIGHT))
 		player.speed_x = PLAYER_SPEED;
 	else if(key_down(JOY_1, BUTTON_LEFT))
 		player.speed_x = -PLAYER_SPEED;
 	else player.speed_x = 0;
+}
+
+void PLAYER_input_jump(){
+	if(key_pressed(JOY_1, BUTTON_A) && PLAYER_can_jump()){
+		player.speed_y = -PLAYER_JUMP_FORCE;
+		jumpsRemainings--;
+	}
+}
+
+inline void PLAYER_restore_jumps_on_ground(){
+	if(PLAYER_on_ground())
+		jumpsRemainings = 2;
+}
+
+/**
+ * This function must be called for the gravity don't get accumulated
+ * when the player is stopped on the ground and the collision still working.
+ */
+inline void PLAYER_adjust_gravity_on_ground(){
+	if(PLAYER_on_ground())
+		player.speed_y = FIX16(1);
+	else if(PLAYER_on_ceil())
+		player.speed_y = 0;
+}
+
+inline bool PLAYER_can_jump(){
+	return jumpsRemainings > 0;
 }
 
 void PLAYER_stop_input(){
@@ -49,8 +85,8 @@ void PLAYER_stop_input(){
 }
 
 void PLAYER_apply_gravity(){
-	player.speed_y -= PLAYER_GRAVITY;
-	if(player.speed_y < PLAYER_MAX_GRAVITY)
+	player.speed_y += PLAYER_GRAVITY;
+	if(player.speed_y > PLAYER_MAX_GRAVITY)
 		player.speed_y = PLAYER_MAX_GRAVITY;
 }
 
@@ -59,41 +95,10 @@ void PLAYER_render(){
 	SPR_setAnim(player.sprite, player.anim);
 }
 
-/**
- * Get player input and set ship speed with:
- * - Constant speed
- * - Always moving (doesn't stop when dpad released)
- * - Four directions, mutually exclusive
- */
-void PLAYER_get_input_dir4() {
-	if (key_down(JOY_1, BUTTON_RIGHT)) {
-		player.speed_x = PLAYER_SPEED;
-		player.speed_y = 0;
-		player.anim = 0;
-	}
-	else 
-	if (key_down(JOY_1, BUTTON_LEFT)) {
-		player.speed_x = -PLAYER_SPEED;
-		player.speed_y = 0;
-		player.anim = 4;
-	}
-	else
-	if (key_down(JOY_1, BUTTON_UP)) {
-		player.speed_x = 0;
-		player.speed_y = -PLAYER_SPEED;
-		player.anim = 2;
-	}
-	else
-	if (key_down(JOY_1, BUTTON_DOWN)) {
-		player.speed_x = 0;
-		player.speed_y = PLAYER_SPEED;
-		player.anim = 6;
-	} 
+bool PLAYER_on_ground(){
+    return LEVEL_collision_result() & COLLISION_BOTTOM;
 }
 
-/**
- * Get player input and set ship speed with:
- * - Constant speed
- * - Stop when dpad released
- * - Eight directions + fix for diagonals
- */
+inline bool PLAYER_on_ceil(){
+	return LEVEL_collision_result() & COLLISION_TOP;
+}
