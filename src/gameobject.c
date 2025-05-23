@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // INIT
 
-u16 GAMEOBJECT_init(GameObject* const obj, const SpriteDefinition* const sprite, s16 x, s16 y, u8 pal, u16 ind) {
+u16 GAMEOBJECT_init(GameObject* const obj, const SpriteDefinition* const sprite, s16 x, s16 y, s8 w_offset, s8 h_offset, u8 pal, u16 ind) {
 	obj->x = FIX16(x);
 	obj->y = FIX16(y);
 	obj->next_x = obj->x;
@@ -15,8 +15,11 @@ u16 GAMEOBJECT_init(GameObject* const obj, const SpriteDefinition* const sprite,
 	PAL_setPalette(pal, sprite->palette->data, DMA);
 	
 	obj->sprite = SPR_addSprite(sprite, x, y, TILE_ATTR_FULL(pal, FALSE, FALSE, 0, ind));
-	obj->w = obj->sprite->definition->w;
-	obj->h = obj->sprite->definition->h;
+
+	obj->w = obj->sprite->definition->w + w_offset;
+	obj->h = obj->sprite->definition->h + h_offset;
+	obj->w_offset = w_offset/2;
+	obj->h_offset = h_offset/2;
 	
 	return obj->sprite->definition->maxNumTile;
 }

@@ -1,5 +1,4 @@
-SPRITE  spr_ship            "sprites/ship-bounds.png"      3 3 FAST 3
-SPRITE  spr_ball            "sprites/ball.png"      2 2 FAST 3
+SPRITE  spr_player          "sprites/player.png"    2 2 FAST 16
 
 IMAGE   bg_mountains    "backgrounds/mountains.png" BEST
 

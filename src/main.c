@@ -124,6 +124,8 @@ int main(bool resetType) {
 	}
 	SYS_showFrameLoad(true);
 	game_init();
+
+	kprintf("Free RAM after Game Init: %d", MEM_getFree());
 	
 	SYS_doVBlankProcess();
 	

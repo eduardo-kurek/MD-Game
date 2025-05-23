@@ -24,7 +24,7 @@ inline bool PLAYER_is_jumping();
 // INIT
 
 u16 PLAYER_init(u16 ind) {
-	ind += GAMEOBJECT_init(&player, &spr_ship, SCREEN_W/2-12, SCREEN_H/2-12, PAL_PLAYER, ind);
+	ind += GAMEOBJECT_init(&player, &spr_player, SCREEN_W/2-12, SCREEN_H/2-12, -4, 0, PAL_PLAYER, ind);
 	player.health = PLAYER_MAX_HEALTH;
 	return ind;
 }
@@ -47,11 +47,18 @@ void PLAYER_update() {
 }
 
 inline void PLAYER_input_move(){
-	if(key_down(JOY_1, BUTTON_RIGHT))
+	if(key_down(JOY_1, BUTTON_RIGHT)){
 		player.speed_x = PLAYER_SPEED;
-	else if(key_down(JOY_1, BUTTON_LEFT))
+		player.anim = 1;
+	}
+	else if(key_down(JOY_1, BUTTON_LEFT)){
 		player.speed_x = -PLAYER_SPEED;
-	else player.speed_x = 0;
+		player.anim = 1;
+	}
+	else{
+		player.speed_x = 0;
+		player.anim = 0;
+	}
 }
 
 inline void PLAYER_input_jump(){
@@ -100,7 +107,7 @@ inline void PLAYER_apply_gravity(){
 }
 
 inline void PLAYER_render(){
-	SPR_setPosition(player.sprite, fix16ToInt(player.x), fix16ToInt(player.y));
+	SPR_setPosition(player.sprite, player.box.left + player.w_offset, player.box.top + player.h_offset);
 	SPR_setAnim(player.sprite, player.anim);
 }
 
