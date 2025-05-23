@@ -48,7 +48,7 @@ extern char text[5];
 // GENERAL PLAYER CONFIG ////////////////////////////////
 
 #define PLAYER_SPEED        FIX16(1.2)
-#define PLAYER_JUMP_FORCE   FIX16(2.5)
+#define PLAYER_JUMP_FORCE   FIX16(3)
 #define PLAYER_GRAVITY      FIX16(0.15)
 #define PLAYER_MAX_GRAVITY  FIX16(3)
 

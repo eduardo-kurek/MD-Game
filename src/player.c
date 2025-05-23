@@ -8,15 +8,17 @@
 GameObject player;
 u8 jumpsRemainings = 2;
 
-void PLAYER_input_move();
+inline void PLAYER_input_move();
 inline void PLAYER_adjust_gravity_on_ground();
 inline bool PLAYER_can_jump();
-void PLAYER_input_jump();
+inline void PLAYER_input_jump();
+inline void PLAYER_jump_release();
 inline void PLAYER_restore_jumps_on_ground();
 inline bool PLAYER_on_ceil();
-void PLAYER_stop_input();
-void PLAYER_apply_gravity();
-void PLAYER_render();
+inline void PLAYER_stop_input();
+inline void PLAYER_apply_gravity();
+inline void PLAYER_render();
+inline bool PLAYER_is_jumping();
 
 ////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -34,6 +36,7 @@ void PLAYER_update() {
 	PLAYER_input_move();
 	PLAYER_adjust_gravity_on_ground();
 	PLAYER_input_jump();
+	PLAYER_jump_release();
 	PLAYER_apply_gravity();
 	PLAYER_restore_jumps_on_ground();
 	GAMEOBJECT_calculate_next_position(&player);
@@ -43,7 +46,7 @@ void PLAYER_update() {
 	PLAYER_render();
 }
 
-void PLAYER_input_move(){
+inline void PLAYER_input_move(){
 	if(key_down(JOY_1, BUTTON_RIGHT))
 		player.speed_x = PLAYER_SPEED;
 	else if(key_down(JOY_1, BUTTON_LEFT))
@@ -51,10 +54,16 @@ void PLAYER_input_move(){
 	else player.speed_x = 0;
 }
 
-void PLAYER_input_jump(){
+inline void PLAYER_input_jump(){
 	if(key_pressed(JOY_1, BUTTON_A) && PLAYER_can_jump()){
 		player.speed_y = -PLAYER_JUMP_FORCE;
 		jumpsRemainings--;
+	}
+}
+
+inline void PLAYER_jump_release(){
+	if(key_released(JOY_1, BUTTON_A) && PLAYER_is_jumping()){
+		player.speed_y = FIX16(0);
 	}
 }
 
@@ -75,27 +84,31 @@ inline void PLAYER_adjust_gravity_on_ground(){
 }
 
 inline bool PLAYER_can_jump(){
-	return jumpsRemainings > 0;
+	return jumpsRemainings > 1;
 }
 
-void PLAYER_stop_input(){
+inline void PLAYER_stop_input(){
 	if(key_released(JOY_1, BUTTON_RIGHT) ||
 		key_released(JOY_1, BUTTON_LEFT))
 		player.speed_x = 0;
 }
 
-void PLAYER_apply_gravity(){
+inline void PLAYER_apply_gravity(){
 	player.speed_y += PLAYER_GRAVITY;
 	if(player.speed_y > PLAYER_MAX_GRAVITY)
 		player.speed_y = PLAYER_MAX_GRAVITY;
 }
 
-void PLAYER_render(){
+inline void PLAYER_render(){
 	SPR_setPosition(player.sprite, fix16ToInt(player.x), fix16ToInt(player.y));
 	SPR_setAnim(player.sprite, player.anim);
 }
 
-bool PLAYER_on_ground(){
+inline bool PLAYER_is_jumping(){
+	return player.speed_y < 0;
+}
+
+inline bool PLAYER_on_ground(){
     return LEVEL_collision_result() & COLLISION_BOTTOM;
 }
 
