@@ -17,16 +17,16 @@ u32 items_table[NUMBER_OF_ROOMS*2] = {0};
 // INIT
 
 u16 LEVEL_init(u16 ind) {
-	PAL_setPalette(PAL_MAP, level1_pal.data, DMA);
-	VDP_loadTileSet(&level1_tiles, ind, DMA);
-	map = MAP_create(&level1_map, BG_MAP, TILE_ATTR_FULL(PAL_MAP, FALSE, FALSE, FALSE, ind));
+	PAL_setPalette(PAL_MAP, world1_pal.data, DMA);
+	VDP_loadTileSet(&world1_tiles, ind, DMA);
+	map = MAP_create(&world1_map, BG_MAP, TILE_ATTR_FULL(PAL_MAP, FALSE, FALSE, FALSE, ind));
 	
 	MAP_scrollToEx(map, 0, 0, TRUE);
 	// VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
 	
 	LEVEL_generate_screen_collision_map(IDX_WALL_FIRST, IDX_WALL_LAST);
 	
-	ind += level1_tiles.numTile;
+	ind += world1_tiles.numTile;
 
 	return ind;
 }

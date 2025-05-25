@@ -12,7 +12,7 @@
 #define IDX_ITEM  	   8
 #define IDX_ITEM_DONE  80
 #define IDX_WALL_FIRST 0
-#define IDX_WALL_LAST  5
+#define IDX_WALL_LAST  20
 
 #define OFFSCREEN_TILES 3
 
