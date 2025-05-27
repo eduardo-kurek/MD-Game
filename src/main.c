@@ -127,16 +127,16 @@ int main(bool resetType) {
 
 	kprintf("Free RAM after Game Init: %d", MEM_getFree());
 	
+	
 	SYS_doVBlankProcess();
+
+	//LEVEL_print_tilemap_buff();
 	
 	while (true) {
 		game_update();
 
 		SPR_update();
 		SYS_doVBlankProcess();
-
-		// update VDP map manually
-		LEVEL_update_items_in_VDP();
 	}
 
 	return 0;

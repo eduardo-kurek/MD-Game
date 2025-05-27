@@ -7,6 +7,8 @@
 
 GameObject player;
 u8 jumpsRemainings = 2;
+s16 checkpoint_x = 64;
+s16 checkpoint_y = 200;
 
 inline void PLAYER_input_move();
 inline void PLAYER_adjust_gravity_on_ground();
@@ -24,7 +26,7 @@ inline bool PLAYER_is_jumping();
 // INIT
 
 u16 PLAYER_init(u16 ind) {
-	ind += GAMEOBJECT_init(&player, &spr_player, SCREEN_W/2-12, SCREEN_H/2-12, -4, 0, PAL_PLAYER, ind);
+	ind += GAMEOBJECT_init(&player, &spr_player, checkpoint_x, checkpoint_y, -4, 0, PAL_PLAYER, ind);
 	player.health = PLAYER_MAX_HEALTH;
 	return ind;
 }

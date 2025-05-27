@@ -4,12 +4,21 @@
 #include <genesis.h>
 #include <sprite_eng.h>
 
-// #define DEBUG
+#define DEBUG
 
-extern char text[5];
+#define MODE_SHOOTER    0
+#define MODE_PLATFORMER 1
+#define GAME_MODE MODE_EXPLORATION_SHOOTER
+
+// GENERAL SCREEN CONFIG ////////////////////////////////
 
 // maximum number of screens (rooms) in a map
-#define NUMBER_OF_ROOMS 9 
+#define NUMBER_OF_ROOMS 9
+#define NUMBER_OF_ROOM_ROWS 3
+
+// GENERAL SCREEN CONFIG ////////////////////////////////
+
+#define HUD_TILES 1
 
 #define SCREEN_W 320
 #define SCREEN_H 224
@@ -27,16 +36,16 @@ extern char text[5];
 
 // GENERAL MAP CONFIG ///////////////////////////////////
 
-#define MAP_TILES_W 60
-#define MAP_TILES_H 42
+#define MAP_METATILES_W 60
+#define MAP_METATILES_H 42
 
-#define MAP_W MAP_TILES_W * TILE_W
-#define MAP_H MAP_TILES_H * TILE_W
+#define MAP_W MAP_METATILES_W * METATILE_W
+#define MAP_H MAP_METATILES_H * METATILE_W
 
 // GENERAL VDP CONFIG ///////////////////////////////////
 
 #define PAL_PLAYER 		PAL0
-#define PAL_NPC 		PAL1
+#define PAL_ENEMY 		PAL1
 #define PAL_MAP 		PAL2
 #define PAL_BACKGROUND 	PAL3
 

@@ -8,11 +8,11 @@
 
 #define NUMBER_OF_LEVELS 5
 
-#define IDX_EMPTY 	   10
+#define IDX_EMPTY 	   38
 #define IDX_ITEM  	   8
 #define IDX_ITEM_DONE  80
 #define IDX_WALL_FIRST 0
-#define IDX_WALL_LAST  20
+#define IDX_WALL_LAST  24
 
 #define OFFSCREEN_TILES 3
 
@@ -26,28 +26,15 @@
 
 extern Map* map;
 extern u8 collision_map[SCREEN_METATILES_W + OFFSCREEN_TILES*2][SCREEN_METATILES_H + OFFSCREEN_TILES*2]; // screen collision map
-
-// screen cell position in map
-extern u16 screen_x;
-extern u16 screen_y;
+extern u16 tilemap_buff[SCREEN_TILES_W * SCREEN_TILES_H];
 
 extern u8 collision_result;
-extern u8 update_tiles_in_VDP;
-
-/*
-  COLLECTED TILE ITEMS TABLE
-  This table controls which item(s) was collected in each room (screen).
-  - Each index is mapped to a room
-  - In each position, each bit is mapped to a item in that room (order is from left to right, top to bottom)
-  - IMPORTANT: this implementation only allows 64 items (64 bits) per room.
-*/
-extern u32 items_table[NUMBER_OF_ROOMS*2]; 
+extern char text[5];
 
 ////////////////////////////////////////////////////////////////////////////
 // INITIALIZATION
 
 u16 LEVEL_init(u16 ind);
-void LEVEL_generate_screen_collision_map(u8 first_index, u8 last_index);
 
 ////////////////////////////////////////////////////////////////////////////
 // GAME LOOP/LOGIC
@@ -64,49 +51,87 @@ inline u8 LEVEL_tileXY(s16 x, s16 y) {
 	return collision_map[x/METATILE_W + OFFSCREEN_TILES][y/METATILE_W + OFFSCREEN_TILES];
 }
 
-inline u8 LEVEL_tileIDX(s16 metatile_x, s16 metatile_y) {
+inline u8 LEVEL_tileIDX16(s16 metatile_x, s16 metatile_y) {
 	return collision_map[metatile_x + OFFSCREEN_TILES][metatile_y + OFFSCREEN_TILES];
 }
 
-inline u16 LEVEL_mapIDX(s16 tile_x, s16 tile_y) {
-	return (MAP_getTile(map, tile_x, tile_y) & 0x03FF);
+inline u16 LEVEL_mapbuffIDX8(s16 tile_x, s16 tile_y) {
+	return (tilemap_buff[tile_y * SCREEN_TILES_W + tile_x]  - map->baseTile) & TILE_INDEX_MASK;
+ }
+
+inline void LEVEL_set_mapbuffIDX8(s16 tile_x, s16 tile_y, u16 value) {
+	tilemap_buff[tile_y * SCREEN_TILES_W + tile_x] = value + map->baseTile;
 }
 
-inline void LEVEL_set_tileXY(s16 x, s16 y, u8 value) {
+/**
+ * Define valor para tile no mapa de colisão.
+ * @param x Posição X em pixels.
+ * @param y Posição Y em pixels.
+ */
+static inline void LEVEL_set_tileXY(s16 x, s16 y, u8 value) {
 	collision_map[x/METATILE_W + OFFSCREEN_TILES][y/METATILE_W + OFFSCREEN_TILES] = value;
 }
 
-inline void LEVEL_set_tileIDX(s16 x, s16 y, u8 value) {
+/**
+ * Define valor para tile no mapa de colisão.
+ * @param x Posição X em metatiles 16x16.
+ * @param y Posição Y em metatiles 16x16.
+ */
+static inline void LEVEL_set_tileIDX16(s16 x, s16 y, u8 value) {
 	collision_map[x + OFFSCREEN_TILES][y + OFFSCREEN_TILES] = value;
 }
 
 u8 LEVEL_check_wall(GameObject* obj);
 void LEVEL_move_and_slide(GameObject* obj);
 
-void LEVEL_remove_tile(s16 x, s16 y, u8 new_tile);
-void LEVEL_register_items_collected(s8 room);
-void LEVEL_restore_items(s8 room);
-
-void LEVEL_scroll_update_collision(s16 offset_x, s16 offset_y);
+void LEVEL_remove_tileXY(s16 x, s16 y, u8 new_tile);
 void LEVEL_update_camera(GameObject* obj);
+void LEVEL_check_map_boundaries(GameObject* obj);
 
-inline void LEVEL_update_items_in_VDP() {
-	if (update_tiles_in_VDP) {
-		LEVEL_restore_items(screen_y/SCREEN_H * 3 + screen_x/SCREEN_W);
-		update_tiles_in_VDP = false;
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // DRAWING AND FX
 
-void LEVEL_draw_collision_map();
-void LEVEL_draw_tile_map();
+inline void LEVEL_draw_collision_map() {
+    VDP_setTextPlane(BG_B);
 
-// DEBUG: change for map you want to draw
+	for (u8 tile_x = 0; tile_x < SCREEN_METATILES_W; ++tile_x) {
+		for (u8 tile_y = 0; tile_y < SCREEN_METATILES_H; ++tile_y) {
+				
+				s16 index = LEVEL_tileIDX16(tile_x, tile_y);
+				if (index != 0) {
+					intToStr(index, text, 2);
+					VDP_drawText(text, tile_x * METATILE_W/8, tile_y * METATILE_W/8);
+				} else {
+					VDP_drawText("  ", tile_x * METATILE_W/8, tile_y * METATILE_W/8);
+				}
+		}
+	}
+}
+
+inline void LEVEL_draw_tile_map() {
+    VDP_setTextPlane(BG_B);
+
+	for (u8 tile_x = 0; tile_x < SCREEN_TILES_W; tile_x += 2) {
+		for (u8 tile_y = 0; tile_y < SCREEN_TILES_H; tile_y += 2) {
+
+			s16 index = LEVEL_mapbuffIDX8(tile_x, tile_y);
+				if (index != 10) {
+					intToStr(index, text, 1);
+					VDP_drawText(text, tile_x, tile_y);
+				} else {
+					VDP_drawText("  ", tile_x, tile_y);
+				}
+		}
+	}
+}
+
+// DEBUG: change for the map you want to draw
 inline void LEVEL_draw_map() {
 	LEVEL_draw_collision_map();
 	// LEVEL_draw_tile_map();
 }
+
+void LEVEL_print_tilemap_buff();
 
 #endif // _LEVEL_H_

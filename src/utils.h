@@ -5,8 +5,12 @@
 #include <sprite_eng.h>
 #include "globals.h"
 
+#define MAX_TEXT_LINE 200
+
 extern u8 buttons[NUMBER_OF_JOYPADS];
 extern u8 buttons_old[NUMBER_OF_JOYPADS];
+
+extern char line[MAX_TEXT_LINE];
 
 ////////////////////////////////////////////////////////////////////////////
 // LOGIC
@@ -25,17 +29,33 @@ inline Box UTILS_get_box(int x, int y, int w, int h) {
 	return (Box){x, x+w, y, y+h};
 }
 
-// void print_bits(u32 value) {
-// 	// HEX -> 1234 1234 1234 1234
-// 	u32 mask = 0x00000000000000FF;
-// 	char str[33];
-// 	for (u8 i = 0; i < 4; ++i) {
-// 		u32 nibble = value & mask;
-// 		str
-// 	}
-// 	str[32] = 0;
-// 	kprintf("%s");
-// }
+inline void print_bits(u32 value) {
+	// HEX ->    12345678
+	u32 mask = 0x0000000F;
+	char str[33] = {0};
+	for (u8 i = 7; i < 100; --i) {
+		u16 nibble = (value >> (4*i)) & mask;
+		switch (nibble) {
+			case 0b0000: strcat(str, "0000"); break; //0
+			case 0b0001: strcat(str, "0001"); break; //1
+			case 0b0010: strcat(str, "0010"); break; //2
+			case 0b0011: strcat(str, "0011"); break; //3
+			case 0b0100: strcat(str, "0100"); break; //4
+			case 0b0101: strcat(str, "0101"); break; //5
+			case 0b0110: strcat(str, "0110"); break; //6
+			case 0b0111: strcat(str, "0111"); break; //7
+			case 0b1000: strcat(str, "1000"); break; //8
+			case 0b1001: strcat(str, "1001"); break; //9
+			case 0b1010: strcat(str, "1010"); break; //10
+			case 0b1011: strcat(str, "1011"); break; //11
+			case 0b1100: strcat(str, "1100"); break; //12
+			case 0b1101: strcat(str, "1101"); break; //13
+			case 0b1110: strcat(str, "1110"); break; //14
+			case 0b1111: strcat(str, "1111"); break; //15
+		}
+	}
+	kprintf("%s", str);
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // DRAWING AND FX
@@ -50,6 +70,20 @@ static inline void glow_color(u16 color_index, const u16* const color_vector, u8
 	if (idx == 0 || idx == n-1) {
 		inc = -inc;
 	}
+}
+
+static inline void text_add_int(u16 num) {
+	static char text[6]; // INT_MAX: 65536
+	intToStr(num, text, 2);
+	if (strlen(text) + strlen(line) + 1 < MAX_TEXT_LINE) {
+		strcat(line, text);
+		strcat(line, ",");
+	}
+}
+
+inline void text_print_and_clear() {
+	kprintf("%s", line);
+	line[0] = 0;
 }
 
 inline void rotate_colors(u8 first_index, u8 last_index, s8 direction) {
