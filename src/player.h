@@ -22,5 +22,7 @@ u16 PLAYER_init(u16 ind);
 
 void PLAYER_update();
 inline bool PLAYER_on_ground();
+void PLAYER_respawn();
+void PLAYER_update_checkpoint();
 
 #endif // _PLAYER_H_

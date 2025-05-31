@@ -87,6 +87,8 @@ void LEVEL_move_and_slide(GameObject* obj);
 void LEVEL_remove_tileXY(s16 x, s16 y, u8 new_tile);
 void LEVEL_update_camera(GameObject* obj);
 void LEVEL_check_map_boundaries(GameObject* obj);
+s16 LEVEL_get_screen_x();
+s16 LEVEL_get_screen_y();
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -108,6 +110,8 @@ inline void LEVEL_draw_collision_map() {
 		}
 	}
 }
+
+void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y);
 
 inline void LEVEL_draw_tile_map() {
     VDP_setTextPlane(BG_B);

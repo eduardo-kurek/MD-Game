@@ -4,7 +4,7 @@
 #include <genesis.h>
 #include <sprite_eng.h>
 
-#define DEBUG
+//#define DEBUG
 
 #define MODE_SHOOTER    0
 #define MODE_PLATFORMER 1
@@ -57,9 +57,9 @@
 // GENERAL PLAYER CONFIG ////////////////////////////////
 
 #define PLAYER_SPEED        FIX16(1.2)
-#define PLAYER_JUMP_FORCE   FIX16(3)
-#define PLAYER_GRAVITY      FIX16(0.15)
-#define PLAYER_MAX_GRAVITY  FIX16(3)
+#define PLAYER_JUMP_FORCE   FIX16(2.6)
+#define PLAYER_GRAVITY      FIX16(0.12)
+#define PLAYER_MAX_GRAVITY  FIX16(2.5)
 
 #define PLAYER_MAX_HEALTH 10
 

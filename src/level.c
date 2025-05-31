@@ -30,7 +30,6 @@ static void LEVEL_register_tiles_in_room(u8 room);
 static void LEVEL_restore_tiles_in_room(u8 room);
 
 static void LEVEL_scroll_map(s16 x, s16 y);
-static void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y);
 
 // DEBUG tools
 
@@ -403,7 +402,7 @@ static void LEVEL_scroll_map(s16 x, s16 y) {
 	VDP_setTileMapDataRect(VDP_BG_A, tilemap_buff, 0, 0, SCREEN_TILES_W, SCREEN_TILES_H, SCREEN_TILES_W, DMA_QUEUE);
 }
 
-static void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
+void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
 	// >> COLLISION MAP (16x16)
 	// << ROOM BIT MAP (16x16)
 	LEVEL_register_tiles_in_room(screen_y/SCREEN_H * NUMBER_OF_ROOM_ROWS + screen_x/SCREEN_W);
@@ -411,6 +410,9 @@ static void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
 	// move to next room and generate collision map
 	screen_x += offset_x;
 	screen_y += offset_y;
+	#ifdef DEBUG
+	kprintf("Changing screen(%u, %u)", screen_x, screen_y);
+	#endif
 	
 	#ifdef DEBUG
 	kprintf("Obtaing map region 40x28 from SGDK Map for room %d", screen_y/SCREEN_H * NUMBER_OF_ROOM_ROWS + screen_x/SCREEN_W);
@@ -461,3 +463,6 @@ void LEVEL_print_tilemap_buff() {
 		}
 	}
 }
+
+s16 LEVEL_get_screen_x(){ return screen_x; }
+s16 LEVEL_get_screen_y(){ return screen_y; }

@@ -5,15 +5,22 @@
 #include "level.h"
 #include "utils.h"
 
+#define SPAWN_X 64
+#define SPAWN_Y 192
+
 GameObject player;
-u8 jumpsRemainings = 2;
-s16 checkpoint_x = 64;
-s16 checkpoint_y = 200;
+u8 jumpsRemainings = 3;
+f16 checkpoint_x = FIX16(SPAWN_X);
+f16 checkpoint_y = FIX16(SPAWN_Y);
+s16 checkpoint_screen_x = 0;
+s16 checkpoint_screen_y = 0;
 
 inline void PLAYER_input_move();
 inline void PLAYER_adjust_gravity_on_ground();
 inline bool PLAYER_can_jump();
 inline void PLAYER_input_jump();
+inline void PLAYER_input_checkpoint();
+inline void PLAYER_input_restart();
 inline void PLAYER_jump_release();
 inline void PLAYER_restore_jumps_on_ground();
 inline bool PLAYER_on_ceil();
@@ -26,7 +33,7 @@ inline bool PLAYER_is_jumping();
 // INIT
 
 u16 PLAYER_init(u16 ind) {
-	ind += GAMEOBJECT_init(&player, &spr_player, checkpoint_x, checkpoint_y, -4, 0, PAL_PLAYER, ind);
+	ind += GAMEOBJECT_init(&player, &spr_player, SPAWN_X, SPAWN_Y, -4, 0, PAL_PLAYER, ind);
 	player.health = PLAYER_MAX_HEALTH;
 	return ind;
 }
@@ -44,6 +51,8 @@ void PLAYER_update() {
 	GAMEOBJECT_calculate_next_position(&player);
 	LEVEL_move_and_slide(&player);
 	GAMEOBJECT_apply_next_position(&player);
+	PLAYER_input_checkpoint();
+	PLAYER_input_restart();
 	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
 	PLAYER_render();
 }
@@ -68,6 +77,16 @@ inline void PLAYER_input_jump(){
 		player.speed_y = -PLAYER_JUMP_FORCE;
 		jumpsRemainings--;
 	}
+}
+
+inline void PLAYER_input_checkpoint(){
+	if(key_pressed(JOY_1, BUTTON_C))
+		PLAYER_update_checkpoint();
+}
+
+inline void PLAYER_input_restart(){
+	if(key_pressed(JOY_1, BUTTON_B))
+		PLAYER_respawn();
 }
 
 inline void PLAYER_jump_release(){
@@ -109,7 +128,9 @@ inline void PLAYER_apply_gravity(){
 }
 
 inline void PLAYER_render(){
-	SPR_setPosition(player.sprite, player.box.left + player.w_offset, player.box.top + player.h_offset);
+	s16 x = player.box.left + player.w_offset;
+	s16 y = player.box.top + player.h_offset;
+	SPR_setPosition(player.sprite, x, y);
 	SPR_setAnim(player.sprite, player.anim);
 }
 
@@ -119,6 +140,35 @@ inline bool PLAYER_is_jumping(){
 
 inline bool PLAYER_on_ground(){
     return LEVEL_collision_result() & COLLISION_BOTTOM;
+}
+
+void PLAYER_respawn(){
+	s16 offset_x = checkpoint_screen_x - LEVEL_get_screen_x();
+	s16 offset_y = checkpoint_screen_y - LEVEL_get_screen_y();
+	LEVEL_scroll_and_update_collision(offset_x, offset_y);
+	player.x = checkpoint_x;
+	player.y = checkpoint_y;
+	// Na verdade ele vai ter um pulo apenas, devo colocar
+	// um a mais para funcionar, por algum motivo :)
+	jumpsRemainings = 2;
+
+	#ifdef DEBUG
+
+	kprintf("Respawning: player(%d, %d). screen offset(%d, %d)", 
+		fix16ToInt(checkpoint_x), fix16ToInt(checkpoint_y), offset_x, offset_y);
+	#endif
+}
+
+void PLAYER_update_checkpoint(){
+	checkpoint_x = player.x;
+	checkpoint_y = player.y;
+	checkpoint_screen_x = LEVEL_get_screen_x();
+	checkpoint_screen_y = LEVEL_get_screen_y();
+
+	#ifdef DEBUG
+	kprintf("Updating checkpoint: player(%d, %d). screen(%u, %u)", 
+		fix16ToInt(checkpoint_x), fix16ToInt(checkpoint_y), checkpoint_screen_x, checkpoint_screen_y);
+	#endif
 }
 
 inline bool PLAYER_on_ceil(){
