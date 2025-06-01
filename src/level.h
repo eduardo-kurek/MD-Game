@@ -9,10 +9,13 @@
 #define NUMBER_OF_LEVELS 5
 
 #define IDX_EMPTY 	   38
-#define IDX_ITEM  	   8
-#define IDX_ITEM_DONE  80
 #define IDX_WALL_FIRST 0
 #define IDX_WALL_LAST  24
+#define IDX_BOTTOM_THORN 32
+#define IDX_TOP_THORN 30
+#define IDX_LEFT_THORN 34
+#define IDX_RIGHT_THORN 28
+#define IDX_IS_THORN(x) ((x == IDX_BOTTOM_THORN) || (x == IDX_TOP_THORN) || (x == IDX_LEFT_THORN) || (id == IDX_RIGHT_THORN))
 
 #define OFFSCREEN_TILES 3
 

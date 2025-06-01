@@ -28,6 +28,7 @@ inline void PLAYER_stop_input();
 inline void PLAYER_apply_gravity();
 inline void PLAYER_render();
 inline bool PLAYER_is_jumping();
+inline void PLAYER_check_thorn();
 
 ////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -54,6 +55,7 @@ void PLAYER_update() {
 	PLAYER_input_checkpoint();
 	PLAYER_input_restart();
 	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
+	PLAYER_check_thorn();
 	PLAYER_render();
 }
 
@@ -136,6 +138,12 @@ inline void PLAYER_render(){
 
 inline bool PLAYER_is_jumping(){
 	return player.speed_y < 0;
+}
+
+inline void PLAYER_check_thorn(){
+	u8 id = LEVEL_tileXY(player.box.left + player.w/2, player.box.top + player.h/2);
+	if(IDX_IS_THORN(id))
+		PLAYER_respawn();
 }
 
 inline bool PLAYER_on_ground(){
