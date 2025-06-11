@@ -56,19 +56,27 @@ u16 LEVEL_init(u16 ind) {
 ////////////////////////////////////////////////////////////////////////////
 // LOGIC & UPDATE
 
-void LEVEL_remove_tileXY(s16 x, s16 y, u8 new_index) {
-	// use 8x8 position in 16x16 collision vector
-	LEVEL_set_tileXY(x, y, new_index);
+void LEVEL_replace_tileXY(s16 x, s16 y, u8 colmap_index, u16 map_tiles[4]) {
+    // use 8x8 position in 16x16 collision vector
+    LEVEL_set_tileXY(x, y, colmap_index);
 
-	// find the position of the first 8x8 tile corresponding to the 16x16 tile
-	x = x / METATILE_W * 2;
-	y = y / METATILE_W * 2;
+    // find the position of the first 8x8 tile corresponding to the 16x16 tile
+    x = x / METATILE_W * 2;
+    y = y / METATILE_W * 2;
 
-	VDP_clearTileMapRect(BG_MAP, x, y, 2, 2);// put zeros in 2x2 tiles
+    // VDP_clearTileMapRect(BG_MAP, x, y, 2, 2);// put zeros in 2x2 tiles
+    VDP_setTileMapXY(VDP_BG_A, map_tiles[0] + map->baseTile, x, y);
+    VDP_setTileMapXY(VDP_BG_A, map_tiles[1] + map->baseTile, x+1, y);
+    VDP_setTileMapXY(VDP_BG_A, map_tiles[2] + map->baseTile, x+1, y+1);
+    VDP_setTileMapXY(VDP_BG_A, map_tiles[3] + map->baseTile, x, y+1);
 
-	#ifdef DEBUG
-	LEVEL_draw_map();
-	#endif
+    #ifdef DEBUG_LEVEL
+    LEVEL_draw_map();
+    #endif
+}
+
+void LEVEL_remove_tileXY(s16 x, s16 y) {
+    LEVEL_replace_tileXY(x, y, 0, (u16[]){IDX_EMPTY,IDX_EMPTY,IDX_EMPTY,IDX_EMPTY});
 }
 
 /**

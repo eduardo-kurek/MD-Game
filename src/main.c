@@ -48,6 +48,7 @@
 #include "player.h"
 #include "background.h"
 #include "level.h"
+#include "jump_refresh.h"
 
 // index for tiles in VRAM (first tile reserved for SGDK)
 // u16 ind = 1;
@@ -76,6 +77,8 @@ void game_init() {
 	#endif
 
 	ind += LEVEL_init(ind);
+
+	JUMPREFRESH_init();
 	
 	#ifdef DEBUG
 	LEVEL_draw_map();
@@ -103,8 +106,7 @@ static inline void game_update() {
 	update_input();
 
 	PLAYER_update();
-	// LEVEL_generate_screen_collision_map(0,5);
-	// LEVEL_restore_items(screen_y/SCREEN_H * 3 + screen_x/SCREEN_W);
+	JUMPREFRESH_update();
 
 	#ifndef DEBUG
 	BACKGROUND_update();

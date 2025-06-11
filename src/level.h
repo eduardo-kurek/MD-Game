@@ -15,7 +15,9 @@
 #define IDX_TOP_THORN 30
 #define IDX_LEFT_THORN 34
 #define IDX_RIGHT_THORN 28
+#define IDX_JUMP_REFRESH 26
 #define IDX_IS_THORN(x) ((x == IDX_BOTTOM_THORN) || (x == IDX_TOP_THORN) || (x == IDX_LEFT_THORN) || (id == IDX_RIGHT_THORN))
+#define IDX_IS_JUMP_REFRESH(x) (x == IDX_JUMP_REFRESH)
 
 #define OFFSCREEN_TILES 3
 
@@ -87,7 +89,14 @@ static inline void LEVEL_set_tileIDX16(s16 x, s16 y, u8 value) {
 u8 LEVEL_check_wall(GameObject* obj);
 void LEVEL_move_and_slide(GameObject* obj);
 
-void LEVEL_remove_tileXY(s16 x, s16 y, u8 new_tile);
+void LEVEL_remove_tileXY(s16 x, s16 y);
+
+/**
+ * 	map_tiles : 0 | 1
+ * 				3 | 2
+ */
+void LEVEL_replace_tileXY(s16 x, s16 y, u8 colmap_index, u16 map_tiles[4]);
+
 void LEVEL_update_camera(GameObject* obj);
 void LEVEL_check_map_boundaries(GameObject* obj);
 s16 LEVEL_get_screen_x();

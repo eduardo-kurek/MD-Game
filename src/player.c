@@ -4,6 +4,7 @@
 #include "player.h"
 #include "level.h"
 #include "utils.h"
+#include "jump_refresh.h"
 
 #define SPAWN_X 64
 #define SPAWN_Y 192
@@ -29,6 +30,7 @@ inline void PLAYER_apply_gravity();
 inline void PLAYER_render();
 inline bool PLAYER_is_jumping();
 inline void PLAYER_check_thorn();
+inline void PLAYER_check_jump_refresh();
 
 ////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -56,6 +58,7 @@ void PLAYER_update() {
 	PLAYER_input_restart();
 	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
 	PLAYER_check_thorn();
+	PLAYER_check_jump_refresh();
 	PLAYER_render();
 }
 
@@ -141,9 +144,22 @@ inline bool PLAYER_is_jumping(){
 }
 
 inline void PLAYER_check_thorn(){
-	u8 id = LEVEL_tileXY(player.box.left + player.w/2, player.box.top + player.h/2);
+	s16 x = player.box.left + player.w/2;
+	s16 y = player.box.top + player.h/2;
+	u8 id = LEVEL_tileXY(x, y);
 	if(IDX_IS_THORN(id))
 		PLAYER_respawn();
+}
+
+inline void PLAYER_check_jump_refresh(){
+	s16 x = player.box.left + player.w/2;
+	s16 y = player.box.top + player.h/2;
+	u8 id = LEVEL_tileXY(x, y);
+	if(IDX_IS_JUMP_REFRESH(id)){
+		JUMPREFRESH_remove(x, y);
+		// Jogador terá um pulo disponível, devo colocar um a mais, 
+		jumpsRemainings = 2;
+	}
 }
 
 inline bool PLAYER_on_ground(){
