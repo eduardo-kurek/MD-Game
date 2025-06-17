@@ -49,6 +49,7 @@
 #include "background.h"
 #include "level.h"
 #include "jump_refresh.h"
+#include "shoot.h"
 
 // index for tiles in VRAM (first tile reserved for SGDK)
 // u16 ind = 1;
@@ -77,7 +78,7 @@ void game_init() {
 	#endif
 
 	ind += LEVEL_init(ind);
-
+	ind += SHOOT_init(ind);
 	JUMPREFRESH_init();
 	
 	#ifdef DEBUG
@@ -107,13 +108,14 @@ static inline void game_update() {
 
 	PLAYER_update();
 	JUMPREFRESH_update();
+	SHOOT_update();
 
 	#ifndef DEBUG
 	BACKGROUND_update();
 	#endif
 
 	LEVEL_update_camera(&player);
-	color_effects();
+	// color_effects();
 }
 
 ////////////////////////////////////////////////////////////////////////////

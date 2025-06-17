@@ -39,8 +39,8 @@ inline void update_rect(GameObject* obj) {
 void GAMEOBJECT_update_boundbox(f16 x, f16 y, GameObject* obj) {
 	obj->box.left  = fix16ToInt(x);
 	obj->box.top   = fix16ToInt(y);
-	obj->box.right = fix16ToInt(x) + obj->w;// - 1;
-	obj->box.bottom= fix16ToInt(y) + obj->h;// - 1;
+	obj->box.right = fix16ToInt(x) + obj->w;
+	obj->box.bottom= fix16ToInt(y) + obj->h;
 }
 
 void GAMEOBJECT_clamp_screen(GameObject* obj) {
@@ -62,6 +62,14 @@ void GAMEOBJECT_bounce_off_screen(GameObject* obj) {
 	if (obj->y < 0 || (obj->y + obj->sprite->definition->h) > SCREEN_H) {
 		obj->speed_y = -obj->speed_y;
 	}	
+}
+
+s16 GAMEOBJECT_get_center_x(const GameObject const* obj){
+	return (s16)((s16)obj->box.left + (s16)obj->w_offset);
+}
+
+s16 GAMEOBJECT_get_center_y(const GameObject const* obj){
+	return obj->box.right + obj->h_offset;
 }
 
 void GAMEOBJECT_calculate_next_position(GameObject* obj){

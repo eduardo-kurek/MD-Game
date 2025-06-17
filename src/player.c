@@ -5,6 +5,7 @@
 #include "level.h"
 #include "utils.h"
 #include "jump_refresh.h"
+#include "shoot.h"
 
 #define SPAWN_X 64
 #define SPAWN_Y 192
@@ -15,6 +16,7 @@ f16 checkpoint_x = FIX16(SPAWN_X);
 f16 checkpoint_y = FIX16(SPAWN_Y);
 s16 checkpoint_screen_x = 0;
 s16 checkpoint_screen_y = 0;
+s8 direction = 1;
 
 inline void PLAYER_input_move();
 inline void PLAYER_adjust_gravity_on_ground();
@@ -22,6 +24,7 @@ inline bool PLAYER_can_jump();
 inline void PLAYER_input_jump();
 inline void PLAYER_input_checkpoint();
 inline void PLAYER_input_restart();
+inline void PLAYER_input_shoot();
 inline void PLAYER_jump_release();
 inline void PLAYER_restore_jumps_on_ground();
 inline bool PLAYER_on_ceil();
@@ -54,8 +57,9 @@ void PLAYER_update() {
 	GAMEOBJECT_calculate_next_position(&player);
 	LEVEL_move_and_slide(&player);
 	GAMEOBJECT_apply_next_position(&player);
-	PLAYER_input_checkpoint();
+	// PLAYER_input_checkpoint();
 	PLAYER_input_restart();
+	PLAYER_input_shoot();
 	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
 	PLAYER_check_thorn();
 	PLAYER_check_jump_refresh();
@@ -65,10 +69,12 @@ void PLAYER_update() {
 inline void PLAYER_input_move(){
 	if(key_down(JOY_1, BUTTON_RIGHT)){
 		player.speed_x = PLAYER_SPEED;
+		direction = 1;
 		player.anim = 1;
 	}
 	else if(key_down(JOY_1, BUTTON_LEFT)){
 		player.speed_x = -PLAYER_SPEED;
+		direction = -1;
 		player.anim = 1;
 	}
 	else{
@@ -92,6 +98,12 @@ inline void PLAYER_input_checkpoint(){
 inline void PLAYER_input_restart(){
 	if(key_pressed(JOY_1, BUTTON_B))
 		PLAYER_respawn();
+}
+
+inline void PLAYER_input_shoot(){
+	if(key_pressed(JOY_1, BUTTON_C)){
+		SHOOT_fire(player.x, player.y, direction);
+	}
 }
 
 inline void PLAYER_jump_release(){

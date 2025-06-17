@@ -21,7 +21,7 @@ u16 PLAYER_init(u16 ind);
 // GAME LOOP/LOGIC
 
 void PLAYER_update();
-inline bool PLAYER_on_ground();
+bool PLAYER_on_ground();
 void PLAYER_respawn();
 void PLAYER_update_checkpoint();
 

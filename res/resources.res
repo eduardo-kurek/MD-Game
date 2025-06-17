@@ -1,4 +1,5 @@
 SPRITE  spr_player      "sprites/player.png"    2 2 FAST 16
+SPRITE  spr_shoot       "sprites/shoot.png"     2 2 FAST 26
 
 IMAGE   bg_mountains    "backgrounds/mountains.png" BEST
 
