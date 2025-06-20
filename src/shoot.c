@@ -3,6 +3,7 @@
 #include "resources.h"
 #include "globals.h"
 #include "level.h"
+#include "player.h"
 
 #define MAX_SHOOTS 5
 #define SHOOT_SPEED 3
@@ -29,6 +30,7 @@ inline bool SHOOT_is_going_left(Shoot* s);
 inline bool SHOOT_hitted_wall(Shoot* s);
 inline bool SHOOT_hitted_left_wall(Shoot* s);
 inline bool SHOOT_hitted_right_wall(Shoot* s);
+inline bool SHOOT_hitted_checkpoint(Shoot* s);
 
 u16 SHOOT_init(u16 ind){
     for(u8 i = 0; i < MAX_SHOOTS; ++i){
@@ -62,6 +64,11 @@ inline void SHOOT_update_position(Shoot* s){
 }
 
 inline bool SHOOT_collided(Shoot* s){
+    if(SHOOT_hitted_checkpoint(s)){
+        PLAYER_update_checkpoint();
+        return true;
+    }
+
     return SHOOT_is_out_of_screen(s)
         || SHOOT_hitted_wall(s);
 }
@@ -93,6 +100,15 @@ inline bool SHOOT_hitted_right_wall(Shoot* s){
     return LEVEL_wallXY(x + s->w, y) || LEVEL_wallXY(x + s->w, y + s->h);
 }
 
+inline bool SHOOT_hitted_checkpoint(Shoot* s){
+    s16 x = s->box.left + s->w/2;
+	s16 y = s->box.top + s->h/2;
+	u8 id = LEVEL_tileXY(x, y);
+	if(IDX_IS_CHECKPOINT(id))
+		return true;
+    return false;
+}
+
 
 void SHOOT_fire(f16 x, f16 y, s8 direction){
     Shoot* shoot = SHOOT_next_available();
@@ -101,6 +117,11 @@ void SHOOT_fire(f16 x, f16 y, s8 direction){
     shoot->y = y;
     shoot->speed_x = FIX16(SHOOT_SPEED * direction);
     SPR_setVisibility(shoot->sprite, VISIBLE);
+}
+
+void SHOOT_hide_all(){
+    for(u8 i = 0; i < MAX_SHOOTS; ++i)
+        SHOOT_hide(&shoots[i]);
 }
 
 inline Shoot* SHOOT_next_available(){

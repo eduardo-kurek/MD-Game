@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "jump_refresh.h"
 #include "shoot.h"
+#include "shoot.h"
 
 #define SPAWN_X 64
 #define SPAWN_Y 192
@@ -179,6 +180,7 @@ inline bool PLAYER_on_ground(){
 }
 
 void PLAYER_respawn(){
+	SHOOT_hide_all();
 	s16 offset_x = checkpoint_screen_x - LEVEL_get_screen_x();
 	s16 offset_y = checkpoint_screen_y - LEVEL_get_screen_y();
 	LEVEL_scroll_and_update_collision(offset_x, offset_y);
