@@ -7,5 +7,6 @@
 void JUMPREFRESH_remove(s16 x, s16 y);
 void JUMPREFRESH_update();
 void JUMPREFRESH_init();
+void JUMPREFRESH_restore_all();
 
 #endif

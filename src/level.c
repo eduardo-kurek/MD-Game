@@ -1,6 +1,7 @@
 #include <genesis.h>
 #include "level.h"
 #include "utils.h"
+#include "jump_refresh.h"
 
 Map* map;
 u8 collision_map[SCREEN_METATILES_W + OFFSCREEN_TILES*2][SCREEN_METATILES_H + OFFSCREEN_TILES*2] = {0}; // screen collision map
@@ -411,6 +412,7 @@ static void LEVEL_scroll_map(s16 x, s16 y) {
 }
 
 void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
+	JUMPREFRESH_restore_all();
 	// >> COLLISION MAP (16x16)
 	// << ROOM BIT MAP (16x16)
 	LEVEL_register_tiles_in_room(screen_y/SCREEN_H * NUMBER_OF_ROOM_ROWS + screen_x/SCREEN_W);

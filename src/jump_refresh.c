@@ -58,3 +58,11 @@ void JUMPREFRESH_init(){
         refreshs[i].remainingFrames = AVAILABLE;
     }
 }
+
+void JUMPREFRESH_restore_all(){
+    for(u8 i = 0; i < MAX_JUMPREFRESHS; ++i){
+        if(refreshs[i].remainingFrames != AVAILABLE){
+            JUMPREFRESH_respawn(&refreshs[i]);
+        }
+    }
+}
