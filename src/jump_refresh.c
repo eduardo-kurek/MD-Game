@@ -40,7 +40,10 @@ inline bool JUMPREFRESH_must_respawn(JumpRefresh* jr){
 }
 
 inline void JUMPREFRESH_respawn(JumpRefresh* jr){
-    LEVEL_replace_tileXY(jr->x, jr->y, IDX_JUMP_REFRESH, (u16[]){IDX_JUMP_REFRESH, IDX_JUMP_REFRESH+1, IDX_JUMP_REFRESH+14, IDX_JUMP_REFRESH+13});
+    LEVEL_replace_tileXY(jr->x, jr->y, IDX_JUMP_REFRESH, (u16[]){
+        IDX_JUMP_REFRESH, IDX_JUMP_REFRESH+1, 
+        IDX_JUMP_REFRESH+15, IDX_JUMP_REFRESH+14
+    });
     jr->remainingFrames = AVAILABLE;
 }
 

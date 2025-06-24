@@ -8,7 +8,7 @@
 
 #define NUMBER_OF_LEVELS 5
 
-#define IDX_EMPTY 	   38
+#define IDX_EMPTY 	   39
 #define IDX_WALL_FIRST 0
 #define IDX_WALL_LAST  24
 #define IDX_BOTTOM_THORN 32
@@ -17,9 +17,11 @@
 #define IDX_RIGHT_THORN 28
 #define IDX_JUMP_REFRESH 26
 #define IDX_CHECKPOINT 36
+#define IDX_TRAMPOLINE 38
 #define IDX_IS_THORN(x) ((x == IDX_BOTTOM_THORN) || (x == IDX_TOP_THORN) || (x == IDX_LEFT_THORN) || (id == IDX_RIGHT_THORN))
 #define IDX_IS_JUMP_REFRESH(x) (x == IDX_JUMP_REFRESH)
 #define IDX_IS_CHECKPOINT(x) (x == IDX_CHECKPOINT)
+#define IDX_IS_TRAMPOLINE(x) (x == IDX_TRAMPOLINE)
 
 #define OFFSCREEN_TILES 3
 

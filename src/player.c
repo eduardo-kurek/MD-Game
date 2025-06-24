@@ -35,6 +35,7 @@ inline void PLAYER_render();
 inline bool PLAYER_is_jumping();
 inline void PLAYER_check_thorn();
 inline void PLAYER_check_jump_refresh();
+inline void PLAYER_check_trampoline();
 
 ////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -64,6 +65,7 @@ void PLAYER_update() {
 	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
 	PLAYER_check_thorn();
 	PLAYER_check_jump_refresh();
+	PLAYER_check_trampoline();
 	PLAYER_render();
 }
 
@@ -171,6 +173,14 @@ inline void PLAYER_check_jump_refresh(){
 	if(IDX_IS_JUMP_REFRESH(id)){
 		JUMPREFRESH_remove(x, y);
 		// Jogador terá um pulo disponível, devo colocar um a mais, 
+		jumpsRemainings = 2;
+	}
+}
+
+inline void PLAYER_check_trampoline(){
+	s16 y = player.box.top + player.h/2;
+	if(IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.left, y)) || IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.right, y))){
+		player.speed_y = -PLAYER_JUMP_FORCE * 1.2;
 		jumpsRemainings = 2;
 	}
 }
