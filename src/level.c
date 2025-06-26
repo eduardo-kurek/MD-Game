@@ -2,6 +2,7 @@
 #include "level.h"
 #include "utils.h"
 #include "jump_refresh.h"
+#include "enemy.h"
 
 Map* map;
 u8 collision_map[SCREEN_METATILES_W + OFFSCREEN_TILES*2][SCREEN_METATILES_H + OFFSCREEN_TILES*2] = {0}; // screen collision map
@@ -415,7 +416,7 @@ void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
 	JUMPREFRESH_restore_all();
 	// >> COLLISION MAP (16x16)
 	// << ROOM BIT MAP (16x16)
-	LEVEL_register_tiles_in_room(screen_y/SCREEN_H * NUMBER_OF_ROOM_ROWS + screen_x/SCREEN_W);
+	LEVEL_register_tiles_in_room(screen_y/SCREEN_H * ROOMS_PER_ROW + screen_x/SCREEN_W);
 	
 	// move to next room and generate collision map
 	screen_x += offset_x;
@@ -433,7 +434,7 @@ void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
 	
 	// >> MAP RECT (8x8) + ROOM BIT MAP (16x16)
 	// << MAP RECT (8x8)
-	LEVEL_restore_tiles_in_room(screen_y/SCREEN_H * NUMBER_OF_ROOM_ROWS + screen_x/SCREEN_W);
+	LEVEL_restore_tiles_in_room(screen_y/SCREEN_H * ROOMS_PER_ROW + screen_x/SCREEN_W);
 
 	// >> SGDK COMPRESSED MAP
 	// << COLLISION MAP (16x16)
@@ -449,6 +450,8 @@ void LEVEL_scroll_and_update_collision(s16 offset_x, s16 offset_y) {
 	#ifdef DEBUG
 	LEVEL_draw_map();
 	#endif
+
+	ENEMY_respawn();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -472,6 +475,10 @@ void LEVEL_print_tilemap_buff() {
 				x += SCREEN_TILES_W;
 		}
 	}
+}
+
+u8 LEVEL_current_room(){
+	return screen_y/SCREEN_H * ROOMS_PER_ROW + screen_x/SCREEN_W;
 }
 
 s16 LEVEL_get_screen_x(){ return screen_x; }

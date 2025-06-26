@@ -110,7 +110,7 @@ inline bool SHOOT_hitted_checkpoint(Shoot* s){
 }
 
 
-void SHOOT_fire(f16 x, f16 y, s8 direction){
+void SHOOT_fire(f16 x, f16 y, s16 direction){
     Shoot* shoot = SHOOT_next_available();
     if(shoot == NULL) return;
     shoot->x = x;

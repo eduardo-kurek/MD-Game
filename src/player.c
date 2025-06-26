@@ -17,7 +17,11 @@ f16 checkpoint_x = FIX16(SPAWN_X);
 f16 checkpoint_y = FIX16(SPAWN_Y);
 s16 checkpoint_screen_x = 0;
 s16 checkpoint_screen_y = 0;
-s8 direction = 1;
+s16 direction = 1;
+
+inline void PLAYER_movement_logic();
+inline void PLAYER_do_collision_checks();
+inline void PLAYER_screen_changed_check();
 
 inline void PLAYER_input_move();
 inline void PLAYER_adjust_gravity_on_ground();
@@ -37,40 +41,46 @@ inline void PLAYER_check_thorn();
 inline void PLAYER_check_jump_refresh();
 inline void PLAYER_check_trampoline();
 
-////////////////////////////////////////////////////////////////////////////
-// INIT
-
 u16 PLAYER_init(u16 ind) {
 	ind += GAMEOBJECT_init(&player, &spr_player, SPAWN_X, SPAWN_Y, -4, 0, PAL_PLAYER, ind);
 	player.health = PLAYER_MAX_HEALTH;
 	return ind;
 }
 
-////////////////////////////////////////////////////////////////////////////
-// UPDATE
-
 void PLAYER_update() {
+	PLAYER_movement_logic();
+	PLAYER_screen_changed_check();
+	PLAYER_do_collision_checks();
+	PLAYER_render();
+}
+
+inline void PLAYER_movement_logic(){
 	PLAYER_input_move();
 	PLAYER_adjust_gravity_on_ground();
 	PLAYER_input_jump();
 	PLAYER_jump_release();
-	PLAYER_apply_gravity();
-	PLAYER_restore_jumps_on_ground();
-	GAMEOBJECT_calculate_next_position(&player);
-	LEVEL_move_and_slide(&player);
-	GAMEOBJECT_apply_next_position(&player);
-	// PLAYER_input_checkpoint();
 	PLAYER_input_restart();
 	PLAYER_input_shoot();
-	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
+	PLAYER_apply_gravity();
+	PLAYER_restore_jumps_on_ground();
+	// PLAYER_input_checkpoint();
+}
+
+inline void PLAYER_do_collision_checks(){
 	PLAYER_check_thorn();
 	PLAYER_check_jump_refresh();
 	PLAYER_check_trampoline();
-	PLAYER_render();
+}
+
+inline void PLAYER_screen_changed_check(){
+	GAMEOBJECT_calculate_next_position(&player);
+	LEVEL_move_and_slide(&player);
+	GAMEOBJECT_apply_next_position(&player);
+	GAMEOBJECT_update_boundbox(player.x, player.y, &player);
 }
 
 inline void PLAYER_input_move(){
-	if(key_down(JOY_1, BUTTON_RIGHT)){
+    if(key_down(JOY_1, BUTTON_RIGHT)){
 		player.speed_x = PLAYER_SPEED;
 		direction = 1;
 		player.anim = 1;
@@ -180,7 +190,7 @@ inline void PLAYER_check_jump_refresh(){
 inline void PLAYER_check_trampoline(){
 	s16 y = player.box.top + player.h/2;
 	if(IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.left, y)) || IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.right, y))){
-		player.speed_y = -PLAYER_JUMP_FORCE * 1.2;
+		player.speed_y = -PLAYER_JUMP_FORCE * 1.35;
 		jumpsRemainings = 2;
 	}
 }
@@ -218,6 +228,8 @@ void PLAYER_update_checkpoint(){
 		fix16ToInt(checkpoint_x), fix16ToInt(checkpoint_y), checkpoint_screen_x, checkpoint_screen_y);
 	#endif
 }
+
+s16 PLAYER_get_x(){ return fix16ToInt(player.x); }
 
 inline bool PLAYER_on_ceil(){
 	return LEVEL_collision_result() & COLLISION_TOP;

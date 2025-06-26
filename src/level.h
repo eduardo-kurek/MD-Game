@@ -154,4 +154,6 @@ inline void LEVEL_draw_map() {
 
 void LEVEL_print_tilemap_buff();
 
+u8 LEVEL_current_room();
+
 #endif // _LEVEL_H_

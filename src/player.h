@@ -24,5 +24,6 @@ void PLAYER_update();
 bool PLAYER_on_ground();
 void PLAYER_respawn();
 void PLAYER_update_checkpoint();
+s16 PLAYER_get_x();
 
-#endif // _PLAYER_H_
+#endif

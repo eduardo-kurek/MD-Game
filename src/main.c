@@ -50,6 +50,7 @@
 #include "level.h"
 #include "jump_refresh.h"
 #include "shoot.h"
+#include "enemy.h"
 
 // index for tiles in VRAM (first tile reserved for SGDK)
 // u16 ind = 1;
@@ -80,6 +81,7 @@ void game_init() {
 	ind += LEVEL_init(ind);
 	ind += SHOOT_init(ind);
 	JUMPREFRESH_init();
+	ENEMY_init(ind);
 	
 	#ifdef DEBUG
 	LEVEL_draw_map();
@@ -109,6 +111,7 @@ static inline void game_update() {
 	PLAYER_update();
 	JUMPREFRESH_update();
 	SHOOT_update();
+	ENEMY_update();
 
 	#ifndef DEBUG
 	BACKGROUND_update();

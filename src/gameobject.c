@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // INIT
 
-u16 GAMEOBJECT_init(GameObject* const obj, const SpriteDefinition* const sprite, s16 x, s16 y, s8 w_offset, s8 h_offset, u8 pal, u16 ind) {
+u16 GAMEOBJECT_init(GameObject* const obj, const SpriteDefinition* const sprite, s16 x, s16 y, s16 w_offset, s16 h_offset, u8 pal, u16 ind) {
 	obj->x = FIX16(x);
 	obj->y = FIX16(y);
 	obj->next_x = obj->x;

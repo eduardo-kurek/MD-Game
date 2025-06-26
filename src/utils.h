@@ -7,6 +7,8 @@
 
 #define MAX_TEXT_LINE 200
 
+#define LEN(VEC) sizeof(VEC)/sizeof(VEC[0])
+
 extern u8 buttons[NUMBER_OF_JOYPADS];
 extern u8 buttons_old[NUMBER_OF_JOYPADS];
 
@@ -86,7 +88,7 @@ inline void text_print_and_clear() {
 	line[0] = 0;
 }
 
-inline void rotate_colors(u8 first_index, u8 last_index, s8 direction) {
+inline void rotate_colors(u8 first_index, u8 last_index, s16 direction) {
 	u16 last_color = PAL_getColor(first_index);
 	for (u8 i = first_index; i != last_index; i += direction) {
 		PAL_setColor(i, PAL_getColor(i + direction));

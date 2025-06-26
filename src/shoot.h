@@ -7,6 +7,6 @@ typedef struct shoot Shoot;
 
 u16 SHOOT_init(u16 ind);
 void SHOOT_update();
-void SHOOT_fire(f16 x, f16 y, s8 direction);
+void SHOOT_fire(f16 x, f16 y, s16 direction);
 
 #endif

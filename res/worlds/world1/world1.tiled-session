@@ -20,6 +20,7 @@
         "world1_map.tmx"
     ],
     "project": "world1.tiled-project",
+    "property.type": "int",
     "recentFiles": [
         "world1_map.tmx"
     ]

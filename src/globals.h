@@ -14,7 +14,7 @@
 
 // maximum number of screens (rooms) in a map
 #define NUMBER_OF_ROOMS 9
-#define NUMBER_OF_ROOM_ROWS 3
+#define ROOMS_PER_ROW 3
 
 // GENERAL SCREEN CONFIG ////////////////////////////////
 
