@@ -22,6 +22,7 @@
 #define IDX_IS_JUMP_REFRESH(x) (x == IDX_JUMP_REFRESH)
 #define IDX_IS_CHECKPOINT(x) (x == IDX_CHECKPOINT)
 #define IDX_IS_TRAMPOLINE(x) (x == IDX_TRAMPOLINE)
+#define IDX_IS_WALL(x) ((x >= IDX_WALL_FIRST) && (x <= IDX_WALL_LAST))
 
 #define OFFSCREEN_TILES 3
 

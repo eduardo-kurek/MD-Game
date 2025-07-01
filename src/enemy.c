@@ -7,9 +7,9 @@
 #include <maths.h>
 
 #define MAX_ENEMIES 3
-#define MAX_SPEED       FIX16(5)
-#define SPEED_FACTOR    FIX16(0.13)
-#define ATRICT_FACTOR   FIX16(0.99)
+#define MAX_SPEED       FIX16(6)
+#define SPEED_FACTOR    FIX16(0.1)
+#define FRAMES_TO_APPLY_ATRICT 2
 
 typedef struct {
     f32 globalX;
@@ -30,6 +30,7 @@ struct enemy {
 Enemy enemies[MAX_ENEMIES];
 Enemy* spawned_enemies[MAX_ENEMIES];
 u8 num_spawned_enemies = 0;
+u8 framesToApplyAtrict = 0;
 
 inline void ENEMY_hide(Enemy* e);
 inline void ENEMY_hide_all();
@@ -41,11 +42,18 @@ inline void ENEMY_spawn(Enemy* e);
 Enemy* ENEMY_from_resources(u8 index);
 inline bool ENEMY_must_spawn(Enemy* e);
 inline void ENEMY_apply_speed(Enemy* e);
+inline void ENEMY_limit_speed(Enemy* e);
+inline void ENEMY_apply_atrict(Enemy* e);
+inline void ENEMY_check_wall_colision(Enemy* e);
 inline void ENEMY_render(Enemy* e);
+inline bool ENEMY_is_left_to_player(Enemy* e);
+inline bool ENEMY_is_right_to_player(Enemy* e);
+inline bool ENEMY_is_going_left(Enemy* e);
+inline bool ENEMY_is_going_right(Enemy* e);
 
 void ENEMY_init(){
     for(u8 i = 0; i < MAX_ENEMIES; ++i){
-        GAMEOBJECT_init(&enemies[i].go, &spr_enemy, 0, 0, -6, -6, PAL_PLAYER, -1);
+        GAMEOBJECT_init(&enemies[i].go, &spr_enemy, 0, 0, 0, 0, PAL_PLAYER, -1);
         SPR_setPalette(enemies[i].go.sprite, PAL_PLAYER);
         SPR_setVisibility(enemies[i].sprite, HIDDEN);
         enemies[i].speed_y = 0;
@@ -57,31 +65,40 @@ void ENEMY_update(){
     for(u8 i = 0; i < num_spawned_enemies; ++i){
         Enemy* e = spawned_enemies[i];
         ENEMY_apply_speed(e);
+        ENEMY_check_wall_colision(e);
+        ENEMY_limit_speed(e);
+        ENEMY_apply_atrict(e);
         ENEMY_render(e);
         //kprintf("Enemy %d: x=%d, y=%d", i, fix16ToInt(e->x), fix16ToInt(e->y));
     }
 }
 
 inline void ENEMY_apply_speed(Enemy* e){
-    s16 player_x = PLAYER_get_x();
-    s16 enemy_x = fix16ToInt(e->x);
-
-    s16 diff = player_x - enemy_x;
-    f16 newSpd = FIX16(diff) / SPEED_FACTOR;
-
-    if(player_x < enemy_x){
-        kprintf("left");
-        e->speed_x -= SPEED_FACTOR;
-    }else if(player_x > enemy_x){
-        kprintf("right");
+    if(ENEMY_is_left_to_player(e)){
         e->speed_x += SPEED_FACTOR;
+    }else if(ENEMY_is_right_to_player(e)){
+        e->speed_x -= SPEED_FACTOR;
     }
-    
-    e->speed_x = fix16Mul(e->speed_x, ATRICT_FACTOR);
+}
+
+inline void ENEMY_limit_speed(Enemy* e){
     e->speed_x = e->speed_x < -MAX_SPEED ? -MAX_SPEED : e->speed_x;
     e->speed_x = e->speed_x > MAX_SPEED ? MAX_SPEED : e->speed_x;
+}
 
-    kprintf("Player (%d), Enemy(%d, %d) speed: %d, diff: %d", player_x, fix16ToInt(e->x), fix16ToInt(e->y), fix16ToInt(e->speed_x), diff);
+inline void ENEMY_apply_atrict(Enemy* e){
+    if(framesToApplyAtrict++ < FRAMES_TO_APPLY_ATRICT) return;
+    e->speed_x = fix16Mul(e->speed_x, FIX16(0.99));
+}
+
+inline void ENEMY_check_wall_colision(Enemy *e){
+    s16 x, y = e->box.top + e->h_offset;
+    if(ENEMY_is_going_left(e))
+        x = e->box.left;
+    else if(ENEMY_is_going_right(e))
+        x = e->box.right;
+    if(LEVEL_wallXY(x, y))
+        e->speed_x = -e->speed_x;
 }
 
 inline void ENEMY_render(Enemy* e){
@@ -92,6 +109,11 @@ inline void ENEMY_render(Enemy* e){
     s16 y = e->spawnY;
     SPR_setPosition(e->sprite, x, y);
 }
+
+inline bool ENEMY_is_left_to_player(Enemy* e){ return fix16ToInt(e->x) < PLAYER_get_x(); }
+inline bool ENEMY_is_right_to_player(Enemy* e){ return fix16ToInt(e->x) > PLAYER_get_x(); }
+inline bool ENEMY_is_going_left(Enemy* e){ return e->speed_x < 0; }
+inline bool ENEMY_is_going_right(Enemy* e){ return e->speed_x > 0; }
 
 void ENEMY_respawn(){
     ENEMY_hide_all();

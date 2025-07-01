@@ -10,6 +10,7 @@
 
 #define SPAWN_X 64
 #define SPAWN_Y 192
+#define TRAMPOLINE_FORCE 1.35
 
 GameObject player;
 u8 jumpsRemainings = 3;
@@ -190,7 +191,7 @@ inline void PLAYER_check_jump_refresh(){
 inline void PLAYER_check_trampoline(){
 	s16 y = player.box.top + player.h/2;
 	if(IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.left, y)) || IDX_IS_TRAMPOLINE(LEVEL_tileXY(player.box.right, y))){
-		player.speed_y = -PLAYER_JUMP_FORCE * 1.35;
+		player.speed_y = -PLAYER_JUMP_FORCE * TRAMPOLINE_FORCE;
 		jumpsRemainings = 2;
 	}
 }
