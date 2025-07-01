@@ -41,6 +41,7 @@ void GAMEOBJECT_update_boundbox(f16 x, f16 y, GameObject* obj);
 void GAMEOBJECT_clamp_screen(GameObject* obj);
 void GAMEOBJECT_wrap_screen(GameObject* obj);
 void GAMEOBJECT_bounce_off_screen(GameObject* obj);
+u8 GAMEOBJECT_check_collision(GameObject* obj1, GameObject* obj2);
 
 /**
  * Calculates the next position of a given obj using its speeds.

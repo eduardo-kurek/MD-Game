@@ -45,6 +45,7 @@ inline void ENEMY_apply_speed(Enemy* e);
 inline void ENEMY_limit_speed(Enemy* e);
 inline void ENEMY_apply_atrict(Enemy* e);
 inline void ENEMY_check_wall_colision(Enemy* e);
+inline void ENEMY_check_player_colision(Enemy* e);
 inline void ENEMY_render(Enemy* e);
 inline bool ENEMY_is_left_to_player(Enemy* e);
 inline bool ENEMY_is_right_to_player(Enemy* e);
@@ -53,7 +54,7 @@ inline bool ENEMY_is_going_right(Enemy* e);
 
 void ENEMY_init(){
     for(u8 i = 0; i < MAX_ENEMIES; ++i){
-        GAMEOBJECT_init(&enemies[i].go, &spr_enemy, 0, 0, 0, 0, PAL_PLAYER, -1);
+        GAMEOBJECT_init(&enemies[i].go, &spr_enemy, 0, 0, -6, -6, PAL_PLAYER, -1);
         SPR_setPalette(enemies[i].go.sprite, PAL_PLAYER);
         SPR_setVisibility(enemies[i].sprite, HIDDEN);
         enemies[i].speed_y = 0;
@@ -68,6 +69,7 @@ void ENEMY_update(){
         ENEMY_check_wall_colision(e);
         ENEMY_limit_speed(e);
         ENEMY_apply_atrict(e);
+        ENEMY_check_player_colision(e);
         ENEMY_render(e);
         //kprintf("Enemy %d: x=%d, y=%d", i, fix16ToInt(e->x), fix16ToInt(e->y));
     }
@@ -92,13 +94,19 @@ inline void ENEMY_apply_atrict(Enemy* e){
 }
 
 inline void ENEMY_check_wall_colision(Enemy *e){
-    s16 x, y = e->box.top + e->h_offset;
+    s16 x, y = e->box.top + e->w/2;
     if(ENEMY_is_going_left(e))
         x = e->box.left;
     else if(ENEMY_is_going_right(e))
         x = e->box.right;
+    else return;
     if(LEVEL_wallXY(x, y))
         e->speed_x = -e->speed_x;
+}
+
+inline void ENEMY_check_player_colision(Enemy *e){
+    if(PLAYER_is_colliding_with(e))
+        PLAYER_respawn();
 }
 
 inline void ENEMY_render(Enemy* e){
@@ -106,7 +114,7 @@ inline void ENEMY_render(Enemy* e){
     GAMEOBJECT_apply_next_position(&e->go);
 	GAMEOBJECT_update_boundbox(e->x, e->y, &e->go);
     s16 x = e->box.left + e->w_offset;
-    s16 y = e->spawnY;
+    s16 y = e->spawnY + e->h_offset;
     SPR_setPosition(e->sprite, x, y);
 }
 
@@ -141,7 +149,7 @@ Enemy* ENEMY_from_resources(u8 index){
     EnemyData* data = (EnemyData*)world1_enemies[index];
     e->room = data->room;
     e->spawnX = fix32ToInt(data->globalX) % SCREEN_W;
-    e->spawnY = fix32ToInt(data->globalY) % SCREEN_H;
+    e->spawnY = fix32ToInt(data->globalY) % SCREEN_H - e->h_offset;
     e->speed_x = 0;
     e->x = FIX16(e->spawnX);
     e->y = FIX16(e->spawnY);

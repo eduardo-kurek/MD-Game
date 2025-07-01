@@ -64,6 +64,16 @@ void GAMEOBJECT_bounce_off_screen(GameObject* obj) {
 	}	
 }
 
+u8 GAMEOBJECT_check_collision(GameObject* obj1, GameObject* obj2){
+	GAMEOBJECT_update_boundbox(obj1->x, obj1->y, obj1);
+	GAMEOBJECT_update_boundbox(obj2->x, obj2->y, obj2);
+
+	return !((obj1->box.left > obj2->box.right) ||
+	         (obj2->box.left > obj1->box.right) ||
+		     (obj1->box.top > obj2->box.bottom) ||
+		     (obj2->box.top > obj1->box.bottom));
+}
+
 s16 GAMEOBJECT_get_center_x(const GameObject const* obj){
 	return (s16)((s16)obj->box.left + (s16)obj->w_offset);
 }

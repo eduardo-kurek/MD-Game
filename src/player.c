@@ -232,6 +232,10 @@ void PLAYER_update_checkpoint(){
 
 s16 PLAYER_get_x(){ return fix16ToInt(player.x); }
 
+u8 PLAYER_is_colliding_with(GameObject *obj){
+	return GAMEOBJECT_check_collision(&player, obj);
+}
+
 inline bool PLAYER_on_ceil(){
 	return LEVEL_collision_result() & COLLISION_TOP;
 }
