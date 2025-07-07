@@ -6,9 +6,9 @@
 #include "player.h"
 #include <maths.h>
 
-#define MAX_ENEMIES 3
-#define MAX_SPEED       FIX16(6)
-#define SPEED_FACTOR    FIX16(0.1)
+#define MAX_ENEMIES 7
+#define MAX_SPEED       FIX16(8)
+#define SPEED_FACTOR    FIX16(0.11)
 #define FRAMES_TO_APPLY_ATRICT 2
 
 typedef struct {
@@ -46,6 +46,7 @@ inline void ENEMY_limit_speed(Enemy* e);
 inline void ENEMY_apply_atrict(Enemy* e);
 inline void ENEMY_check_wall_colision(Enemy* e);
 inline void ENEMY_check_player_colision(Enemy* e);
+inline void ENEMY_bounce(Enemy* e);
 inline void ENEMY_render(Enemy* e);
 inline bool ENEMY_is_left_to_player(Enemy* e);
 inline bool ENEMY_is_right_to_player(Enemy* e);
@@ -57,6 +58,7 @@ void ENEMY_init(){
         GAMEOBJECT_init(&enemies[i].go, &spr_enemy, 0, 0, -6, -6, PAL_PLAYER, -1);
         SPR_setPalette(enemies[i].go.sprite, PAL_PLAYER);
         SPR_setVisibility(enemies[i].sprite, HIDDEN);
+        SPR_setVFlip(enemies[i].sprite, FALSE);
         enemies[i].speed_y = 0;
     }
     ENEMY_spawn_all();
@@ -71,7 +73,6 @@ void ENEMY_update(){
         ENEMY_apply_atrict(e);
         ENEMY_check_player_colision(e);
         ENEMY_render(e);
-        //kprintf("Enemy %d: x=%d, y=%d", i, fix16ToInt(e->x), fix16ToInt(e->y));
     }
 }
 
@@ -93,7 +94,7 @@ inline void ENEMY_apply_atrict(Enemy* e){
     e->speed_x = fix16Mul(e->speed_x, FIX16(0.99));
 }
 
-inline void ENEMY_check_wall_colision(Enemy *e){
+inline void ENEMY_check_wall_colision(Enemy* e){
     s16 x, y = e->box.top + e->w/2;
     if(ENEMY_is_going_left(e))
         x = e->box.left;
@@ -101,10 +102,14 @@ inline void ENEMY_check_wall_colision(Enemy *e){
         x = e->box.right;
     else return;
     if(LEVEL_wallXY(x, y))
-        e->speed_x = -e->speed_x;
+        ENEMY_bounce(e);
 }
 
-inline void ENEMY_check_player_colision(Enemy *e){
+inline void ENEMY_bounce(Enemy* e){
+    e->speed_x = -e->speed_x;
+}
+
+inline void ENEMY_check_player_colision(Enemy* e){
     if(PLAYER_is_colliding_with(e))
         PLAYER_respawn();
 }

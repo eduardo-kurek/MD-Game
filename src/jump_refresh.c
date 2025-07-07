@@ -1,9 +1,9 @@
 #include "jump_refresh.h"
 #include "level.h"
 
-#define MAX_JUMPREFRESHS 10
+#define MAX_JUMPREFRESHS 30
 
-#define FRAMES_TO_RESPAWN 75 // 2.5 seconds
+#define FRAMES_TO_RESPAWN 90 // 3 seconds
 #define AVAILABLE -1
 
 typedef struct jump_refresh{

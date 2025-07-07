@@ -9,3 +9,5 @@ PALETTE world1_pal      "worlds/world1/world1_pal.pal"
 MAP     world1_map      "worlds/world1/world1_map.tmx" map_layer BEST 0
 
 OBJECTS  world1_enemies      "worlds/world1/world1_map.tmx" enemy_layer "x:f32;y:f32;room:u8"
+
+XGM music "sounds/cant_go_home_again.vgm" -1

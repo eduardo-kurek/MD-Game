@@ -116,7 +116,7 @@ inline void PLAYER_input_restart(){
 
 inline void PLAYER_input_shoot(){
 	if(key_pressed(JOY_1, BUTTON_C)){
-		SHOOT_fire(player.x, player.y, direction);
+		SHOOT_fire(player.x, player.y + FIX16(3), direction);
 	}
 }
 
@@ -207,6 +207,7 @@ void PLAYER_respawn(){
 	LEVEL_scroll_and_update_collision(offset_x, offset_y);
 	player.x = checkpoint_x;
 	player.y = checkpoint_y;
+	player.speed_y = 0;
 	// Na verdade ele vai ter um pulo apenas, devo colocar
 	// um a mais para funcionar, por algum motivo :)
 	jumpsRemainings = 2;
