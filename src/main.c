@@ -63,12 +63,16 @@ const u16 const bg_color_glow[] = {0x0, 0x222, 0x444, 0x666, 0x888};
 #define MAX_OBJ 1
 GameObject balls[MAX_OBJ];
 
+typedef enum {
+	START, RUNNING, END
+} GAME_STATE;
+
+GAME_STATE state = START;
+
 ////////////////////////////////////////////////////////////////////////////
 // GAME INIT
 
 void game_init() {
-	VDP_setScreenWidth320();
-	SPR_init();
 	
 	// init BACKGROUND, LEVEL ///////////////////////////////
 
@@ -90,7 +94,6 @@ void game_init() {
 	// init GAME OBJECTS ////////////////////////////////////////////
 
 	PLAYER_init(ind);
-	XGM_startPlay(music);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -107,8 +110,6 @@ static inline void color_effects() {
 }
 
 static inline void game_update() {
-	update_input();
-
 	PLAYER_update();
 	JUMPREFRESH_update();
 	SHOOT_update();
@@ -131,17 +132,38 @@ int main(bool resetType) {
 		SYS_hardReset();
 	}
 	SYS_showFrameLoad(true);
-	game_init();
 
 	kprintf("Free RAM after Game Init: %d", MEM_getFree());
 	
 	
 	SYS_doVBlankProcess();
 
-	//LEVEL_print_tilemap_buff();
+	XGM_setLoopNumber(-1);
+	XGM_startPlay(music);
+		
+	VDP_setScreenWidth320();
+	SPR_init();
+	VDP_drawImageEx(BG_BACKGROUND, &start, TILE_ATTR_FULL(PAL_BACKGROUND, 0, 0, 0, ind), 0, 0, TRUE, DMA);
 	
 	while (true) {
-		game_update();
+		update_input();
+
+		switch(state){
+			case START:
+				if(key_pressed(JOY_1, BUTTON_A)){
+					game_init();
+					state = RUNNING;
+				}
+
+				break;
+
+			case RUNNING:
+				game_update();
+				break;
+
+			case END:
+				break;
+		}
 
 		SPR_update();
 		SYS_doVBlankProcess();
