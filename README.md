@@ -1,4 +1,4 @@
-# About  
+![image](https://github.com/user-attachments/assets/8c7e8420-555a-41c7-92ab-bcb4b2931e5d)# About  
 **I Wanna Be The Game** is a precision platformer game. By nature, it has a high difficulty level and often requires multiple attempts to pass the most challenging sections.  
 
 This game includes:
@@ -8,6 +8,9 @@ This game includes:
 - Spikes as obstacles  
 - Checkpoint system
 - Shoot to save checkpoints
+- Enemy
+- Jump refresh
+- Trampline
 - Music
 
 Created with [SGDK](https://github.com/Stephane-D/SGDK)
