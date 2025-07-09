@@ -6,7 +6,7 @@
 
 // #define DEBUG
 
-#define TEST_MODE
+//#define TEST_MODE
 
 // GENERAL SCREEN CONFIG ////////////////////////////////
 
