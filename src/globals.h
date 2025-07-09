@@ -6,9 +6,7 @@
 
 // #define DEBUG
 
-#define MODE_SHOOTER    0
-#define MODE_PLATFORMER 1
-#define GAME_MODE MODE_EXPLORATION_SHOOTER
+#define TEST_MODE
 
 // GENERAL SCREEN CONFIG ////////////////////////////////
 

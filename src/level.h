@@ -24,6 +24,8 @@
 #define IDX_IS_TRAMPOLINE(x) (x == IDX_TRAMPOLINE)
 #define IDX_IS_WALL(x) ((x >= IDX_WALL_FIRST) && (x <= IDX_WALL_LAST))
 
+#define LAST_ROOM 15
+
 #define OFFSCREEN_TILES 3
 
 #define COLLISION_LEFT   0b0001

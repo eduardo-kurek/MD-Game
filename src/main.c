@@ -51,6 +51,7 @@
 #include "jump_refresh.h"
 #include "shoot.h"
 #include "enemy.h"
+#include "level.h"
 
 // index for tiles in VRAM (first tile reserved for SGDK)
 // u16 ind = 1;
@@ -131,7 +132,7 @@ int main(bool resetType) {
 	if (!resetType) {
 		SYS_hardReset();
 	}
-	SYS_showFrameLoad(true);
+	//SYS_showFrameLoad(true);
 
 	kprintf("Free RAM after Game Init: %d", MEM_getFree());
 	
@@ -159,9 +160,17 @@ int main(bool resetType) {
 
 			case RUNNING:
 				game_update();
+				u8 room = LEVEL_current_room();
+				if(room == LAST_ROOM){
+					SPR_reset();
+					VDP_resetScreen();
+					VDP_resetSprites();
+					state = END;
+				};
 				break;
 
 			case END:
+				VDP_drawImageEx(BG_BACKGROUND, &end, TILE_ATTR_FULL(PAL_BACKGROUND, 0, 0, 0, ind), 0, 0, TRUE, DMA);
 				break;
 		}
 

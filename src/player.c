@@ -64,7 +64,7 @@ inline void PLAYER_movement_logic(){
 	PLAYER_input_shoot();
 	PLAYER_apply_gravity();
 	PLAYER_restore_jumps_on_ground();
-	// PLAYER_input_checkpoint();
+	PLAYER_input_checkpoint();
 }
 
 inline void PLAYER_do_collision_checks(){
@@ -105,8 +105,10 @@ inline void PLAYER_input_jump(){
 }
 
 inline void PLAYER_input_checkpoint(){
+	#ifdef TEST_MODE
 	if(key_pressed(JOY_1, BUTTON_C))
 		PLAYER_update_checkpoint();
+	#endif
 }
 
 inline void PLAYER_input_restart(){
@@ -115,9 +117,11 @@ inline void PLAYER_input_restart(){
 }
 
 inline void PLAYER_input_shoot(){
+	#ifndef TEST_MODE
 	if(key_pressed(JOY_1, BUTTON_C)){
 		SHOOT_fire(player.x, player.y + FIX16(3), direction);
 	}
+	#endif
 }
 
 inline void PLAYER_jump_release(){
